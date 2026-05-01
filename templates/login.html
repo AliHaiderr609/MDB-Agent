@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Login – MDB System{% endblock %}
+
+{% block body %}
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1><i class="fas fa-graduation-cap"></i> MDB</h1>
+            <p>Intelligent Agent System – Sign In</p>
+        </div>
+
+        <div class="alerts">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% for cat, msg in messages %}
+                    <div class="alert {{ cat }}">{{ msg }}</div>
+                {% endfor %}
+            {% endwith %}
+        </div>
+
+        <form method="POST">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="maryam@admin.com" required autofocus>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="••••••••" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary-blue">Sign In</button>
+        </form>
+
+        <div class="form-footer">
+            Don't have an account? <a href="{{ url_for('register') }}">Register as Student</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

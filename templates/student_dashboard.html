@@ -1,0 +1,394 @@
+{% extends 'base.html' %}
+{% block title %}Student Dashboard – MDB Agent{% endblock %}
+
+{% block content %}
+<div class="dashboard-grid">
+    <!-- Main Content (Center) -->
+    <div class="dashboard-main">
+        <header class="dashboard-header">
+            <div>
+                <h1>Student Dashboard</h1>
+                <p class="section-desc">Welcome back, <strong>{{ session.name }}</strong>! Ready to learn?</p>
+            </div>
+            <div class="header-actions">
+                <span class="badge badge-success"><i class="fas fa-check-circle"></i> AI System Online</span>
+            </div>
+        </header>
+
+        <!-- Pre-Posting FAQ / Guidelines -->
+        <div class="glass-card faq-card" id="faq-section">
+            <div class="card-header dark-glow">
+                <i class="fas fa-circle-info"></i>
+                <span>Before You Post - MDB FAQs</span>
+            </div>
+            <div class="card-body">
+                <div class="faq-item">
+                    <h4>1) Is MDB graded or attendance-based?</h4>
+                    <p>MDB is for academic discussion only. It is not a graded or attendance activity.</p>
+                </div>
+                <div class="faq-item">
+                    <h4>2) What should I avoid posting?</h4>
+                    <p>Do not post non-academic messages like "Yes sir", "Done", "Present", "Good effort", etc.</p>
+                </div>
+                <div class="faq-item">
+                    <h4>3) Where can I find course pattern, syllabus, and next topic info?</h4>
+                    <p>Check the course announcements and uploaded handouts for official updates.</p>
+                </div>
+                <div class="faq-item">
+                    <h4>4) Can I share WhatsApp or external groups?</h4>
+                    <p>No. WhatsApp or external group sharing is not allowed in MDB posts.</p>
+                </div>
+                <div class="faq-item">
+                    <h4>5) What happens if I post non-academic content?</h4>
+                    <p>The system filters such messages and provides an automatic guidance reply.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Query Card -->
+        <div class="glass-card query-card">
+            <div class="card-header blue-glow">
+                <i class="fas fa-pen-fancy"></i>
+                <span>Ask a Question to Instructor ✍️</span>
+            </div>
+            <div class="card-body">
+                <p class="instruction-text">Ask academic questions related to CS101. AI will try to answer instantly from handouts!</p>
+                <textarea id="queryInput" placeholder="Type your academic question here (e.g., What is CPU?)"></textarea>
+                <button type="button" id="postBtn" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Post Query
+                </button>
+            </div>
+        </div>
+
+        <!-- History Card -->
+        <div class="glass-card history-card" style="padding: 0; overflow: hidden; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.08);">
+            <div class="card-header dark-glow" style="margin: 0; border-radius: 0; padding: 1.25rem 2rem; background: #1e293b;">
+                <i class="fas fa-history" style="font-size: 1.25rem;"></i>
+                <span style="font-size: 1.25rem; font-weight: 700;">My MDB History</span>
+                <span class="badge" style="margin-left: auto; background: #64748b; color: #fff; padding: 0.5rem 1rem; border-radius: 30px; font-size: 0.75rem; font-weight: 800;">Course: CS101</span>
+            </div>
+            <div class="history-filters">
+                <div class="filter-group">
+                    <label for="academicFilter">Academic Status</label>
+                    <select id="academicFilter">
+                        <option value="all">All</option>
+                        <option value="academic">Academic</option>
+                        <option value="non-academic">Non-Academic</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="responseFilter">Response Status</label>
+                    <select id="responseFilter">
+                        <option value="all">All</option>
+                        <option value="answered">Answered</option>
+                        <option value="unanswered">No Answer Found</option>
+                        <option value="filtered">Auto-Filtered</option>
+                    </select>
+                </div>
+            </div>
+            <div class="table-container" style="margin: 0;">
+                <table style="width: 100%; border-collapse: collapse; background: #fff;">
+                    <thead style="border-bottom: 1px solid #e2e8f0;">
+                        <tr>
+                            <th style="width: 15%; padding: 1.25rem 2rem; text-align: left; font-size: 1.1rem; color: #000; font-weight: 800;">Query</th>
+                            <th style="width: 15%; padding: 1.25rem 2rem; text-align: left; font-size: 1.1rem; color: #000; font-weight: 800;">Academic Status</th>
+                            <th style="width: 15%; padding: 1.25rem 2rem; text-align: left; font-size: 1.1rem; color: #000; font-weight: 800;">Status</th>
+                            <th style="width: 55%; padding: 1.25rem 2rem; text-align: left; font-size: 1.1rem; color: #000; font-weight: 800;">Response</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyList">
+                        <!-- History items will be loaded here -->
+                        <tr id="emptyState">
+                            <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 5rem 2rem;">
+                                <i class="fas fa-inbox" style="font-size: 3rem; display: block; margin-bottom: 1.5rem; opacity: 0.3;"></i>
+                                <span style="font-weight: 600; font-size: 1.1rem;">No queries yet. Your academic history will appear here.</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar Content (Right) -->
+    <div class="dashboard-side">
+        <!-- User Profile Card -->
+        <div class="glass-card profile-card text-center" style="padding: 2.5rem;">
+            <div class="avatar-circle">
+                {{ session.name[0] | upper }}{{ session.name.split(' ')[1][0] if ' ' in session.name else '' | upper }}
+            </div>
+            <h2 class="mt-4" style="color: var(--primary-green);">Hi, {{ session.name }}! 🎓</h2>
+            <p class="text-muted mb-4">CS101 Student Dashboard</p>
+            
+            <div class="profile-actions" style="border-top: 1px solid #e2e8f0; padding-top: 1.5rem; margin-top: 1.5rem;">
+                <button class="btn btn-outline btn-block mb-3">Edit Profile</button>
+                <form action="{{ url_for('logout') }}" method="post">
+                    <button type="submit" class="btn btn-danger btn-block">Logout Safely</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Note Card -->
+        <div class="glass-card note-card">
+            <div class="note-header">
+                <i class="fas fa-thumbtack" style="color: var(--danger);"></i>
+                <span>Note:</span>
+            </div>
+            <p>If the instructor has uploaded handouts, our **AI Agent** will reply to your query instantly. Otherwise, the instructor will respond manually.</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .dashboard-grid { display: grid; grid-template-columns: 1fr 340px; gap: 2.5rem; }
+    
+    .card-header { 
+        padding: 1rem 1.5rem; 
+        border-radius: 12px 12px 0 0; 
+        margin: -2rem -2rem 1.5rem -2rem;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 600;
+        font-family: 'Outfit', sans-serif;
+    }
+    .blue-glow { background: #3b82f6; }
+    .dark-glow { background: #1e293b; }
+    .faq-card .card-body {
+        padding-top: 0.25rem;
+    }
+    .faq-item {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    .faq-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0.25rem;
+    }
+    .faq-item h4 {
+        margin: 0 0 0.35rem 0;
+        color: #1e293b;
+        font-size: 0.98rem;
+        font-weight: 800;
+    }
+    .faq-item p {
+        margin: 0;
+        color: #64748b;
+        font-size: 0.92rem;
+        line-height: 1.55;
+    }
+
+    .query-card textarea {
+        width: 100%; height: 140px;
+        background: #fafafa; border: 2px solid #e2e8f0;
+        border-radius: 12px; padding: 1.25rem;
+        font-family: inherit; font-size: 1rem; resize: none;
+        margin-bottom: 1.25rem; transition: border-color 0.2s;
+    }
+    .query-card textarea:focus { outline: none; border-color: #3b82f6; background: #fff; }
+    .instruction-text { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.25rem; }
+
+    /* ── Sidebar Cards ── */
+    .avatar-circle {
+        width: 100px; height: 100px;
+        background: #3b82f6; color: #fff;
+        border-radius: 50%; display: flex;
+        align-items: center; justify-content: center;
+        margin: 0 auto; font-size: 2rem; font-weight: 800;
+        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+    }
+    .text-center { text-align: center; }
+    .mt-4 { margin-top: 1.5rem; }
+    .mb-3 { margin-bottom: 1rem; }
+    .mb-4 { margin-bottom: 1.5rem; }
+    .btn-outline { background: transparent; border: 1.5px solid #3b82f6; color: #3b82f6; }
+    .btn-block { width: 100%; justify-content: center; font-size: 0.95rem; padding: 0.75rem; }
+
+    .note-card { background: #fff; border-left: 4px solid var(--danger); }
+    .note-header { display: flex; align-items: center; gap: 0.5rem; color: #1e293b; font-weight: 700; margin-bottom: 0.75rem; }
+    .note-card p { font-size: 0.9rem; color: #64748b; line-height: 1.6; }
+
+    /* ── Table Styling ── */
+    .table-container { margin-top: 0; border-radius: 0 0 16px 16px; overflow: hidden; }
+    .history-filters {
+        display: flex;
+        gap: 1rem;
+        align-items: end;
+        padding: 1rem 2rem;
+        border-bottom: 1px solid #e2e8f0;
+        background: #f8fafc;
+    }
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+    }
+    .filter-group label {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #475569;
+    }
+    .filter-group select {
+        min-width: 180px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        padding: 0.45rem 0.65rem;
+        background: #fff;
+        font-weight: 600;
+        color: #1e293b;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; padding: 1.25rem 2rem; color: #000; font-weight: 800; font-size: 1.1rem; border-bottom: 1px solid #e2e8f0; }
+    td { padding: 1.5rem 2rem; border-bottom: 1px solid #f1f5f9; vertical-align: top; font-weight: 800; color: #000; }
+    .query-text { font-weight: 800; color: #000; }
+    .response-area { font-weight: 800; color: #000; line-height: 1.6; white-space: pre-wrap; font-size: 0.95rem; }
+    
+    .status-badge { 
+        display: inline-block; 
+        padding: 0.4rem 1.25rem; 
+        border-radius: 8px; 
+        font-size: 0.85rem; 
+        font-weight: 800; 
+        text-align: center;
+        color: #fff;
+    }
+    .status-answered { background: #38a169; }
+    .status-unanswered { background: #e53e3e; }
+    .status-filtered { background: #e53e3e; }
+    .status-academic { background: #2f855a; }
+    .status-non-academic { background: #c53030; }
+    
+    @media (max-width: 1100px) { .dashboard-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 740px) {
+        .history-filters { flex-direction: column; align-items: stretch; }
+        .filter-group select { min-width: 0; width: 100%; }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const queryInput = document.getElementById('queryInput');
+    const postBtn = document.getElementById('postBtn');
+    const historyList = document.getElementById('historyList');
+    const emptyState = document.getElementById('emptyState');
+    const academicFilter = document.getElementById('academicFilter');
+    const responseFilter = document.getElementById('responseFilter');
+    let allHistory = [];
+
+    function loadHistory() {
+        fetch('/history')
+            .then(res => res.json())
+            .then(data => {
+                allHistory = data;
+                renderHistory(applyFilters(data));
+            });
+    }
+
+    function getResponseStatus(item) {
+        if (!item.is_academic) return 'filtered';
+        if (item.has_answer) return 'answered';
+        return 'unanswered';
+    }
+
+    function applyFilters(items) {
+        return items.filter(item => {
+            const academicMatch =
+                academicFilter.value === 'all' ||
+                (academicFilter.value === 'academic' && item.is_academic) ||
+                (academicFilter.value === 'non-academic' && !item.is_academic);
+            const responseMatch =
+                responseFilter.value === 'all' ||
+                responseFilter.value === getResponseStatus(item);
+            return academicMatch && responseMatch;
+        });
+    }
+
+    function renderHistory(items) {
+        historyList.innerHTML = '';
+        if (!items.length) {
+            historyList.appendChild(emptyState);
+            emptyState.style.display = '';
+            return;
+        }
+        emptyState.style.display = 'none';
+        items.forEach(item => {
+            appendHistoryItem(item);
+        });
+    }
+
+    function appendHistoryItem(item) {
+        const row = document.createElement('tr');
+        let statusBadge = '';
+        let academicBadge = '';
+        
+        if (item.is_academic) {
+            academicBadge = '<span class="status-badge status-academic">Academic</span>';
+        } else {
+            academicBadge = '<span class="status-badge status-non-academic">Non-Academic</span>';
+        }
+        
+        if (!item.is_academic) {
+            statusBadge = '<span class="status-badge status-filtered">Auto-Filtered</span>';
+        } else if (item.has_answer) {
+            statusBadge = '<span class="status-badge status-answered">Answered</span>';
+        } else {
+            statusBadge = '<span class="status-badge status-unanswered">No Answer Found</span>';
+        }
+            
+        row.innerHTML = `
+            <td class="query-text">${item.query}</td>
+            <td>${academicBadge}</td>
+            <td>${statusBadge}</td>
+            <td class="response-area">${item.response || '<em>No reply yet</em>'}</td>
+        `;
+        historyList.prepend(row);
+    }
+
+    postBtn.addEventListener('click', () => {
+        const query = queryInput.value.trim();
+        if (!query) return;
+
+        postBtn.disabled = true;
+        postBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+
+        const formData = new FormData();
+        formData.append('query', query);
+
+        fetch('/analyze_query', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            queryInput.value = '';
+            postBtn.disabled = false;
+            postBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Post Query';
+            
+            // Refresh history
+            loadHistory();
+
+            if (!data.is_academic) {
+                alert('Your query was rejected: ' + data.reason);
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            postBtn.disabled = false;
+            postBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Post Query';
+        });
+    });
+
+    academicFilter.addEventListener('change', () => {
+        renderHistory(applyFilters(allHistory));
+    });
+
+    responseFilter.addEventListener('change', () => {
+        renderHistory(applyFilters(allHistory));
+    });
+
+    // Initial load
+    loadHistory();
+</script>
+{% endblock %}

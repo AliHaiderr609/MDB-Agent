@@ -1,0 +1,8 @@
+flask
+flask-sqlalchemy
+pypdf2
+sentence-transformers
+keybert
+scikit-learn
+pandas
+spacy

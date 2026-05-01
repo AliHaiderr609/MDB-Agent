@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+{% block title %}Instructor Dashboard – MDB{% endblock %}
+{% block content %}
+<div class="dashboard-grid">
+    <!-- Main Content (Center) -->
+    <div class="courses-main">
+        <header class="dashboard-header">
+            <div>
+                <h1>My Courses <span style="font-size: 1rem; font-weight: 400; color: #94a3b8;">( Spring 2026 )</span></h1>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-outline btn-sm" style="padding: 0.5rem 1rem; border: 1.5px solid #3b82f6; color: #3b82f6;">Edit Profile</button>
+                <span class="badge badge-primary" style="background: #f1f5f9; color: #1e293b; padding: 0.5rem 1rem;">Instructor Mode: {{ session.name }}</span>
+            </div>
+        </header>
+
+        <!-- Notification Alert -->
+        <div class="alert purple-alert">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>Dear Instructor, MDB filtering and replies are active for **Spring 2026**.</span>
+        </div>
+
+        <div class="glass-card course-card">
+            <div class="course-header-banner">
+                <h3>CS101 - Introduction of Computing</h3>
+            </div>
+            <div class="course-content">
+                <div style="display: flex; gap: 1.5rem; align-items: center; margin-bottom: 2rem;">
+                    <div class="avatar-circle-da">
+                        {{ session.name[0] | upper }}{{ session.name.split(' ')[1][0] if ' ' in session.name else '' | upper }}
+                    </div>
+                    <div>
+                        <h4 style="color: #3b82f6; font-size: 1.1rem; font-weight: 700;">Prof. {{ session.name }}</h4>
+                        <p class="text-muted" style="font-size: 0.9rem;">Qualification:</p>
+                        <p class="text-muted" style="font-size: 0.9rem;">Dept:</p>
+                    </div>
+                </div>
+                
+                <div class="course-icon-row">
+                    <div class="course-icon-item">
+                        <img src="https://img.icons8.com/color/48/books.png" alt="books"/>
+                        <span>Assignments</span>
+                    </div>
+                    <div class="course-icon-item">
+                        <img src="https://img.icons8.com/color/48/coffee.png" alt="quizzes"/>
+                        <span>Quizzes</span>
+                    </div>
+                    <div class="course-icon-item">
+                        <img src="https://img.icons8.com/color/48/edit--v1.png" alt="gdb"/>
+                        <span>GDB</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Handout Manager Section -->
+        <div class="section-title-row">
+            <h2>Handout Manager</h2>
+            <p class="section-desc">Upload study materials for the AI to learn and answer queries.</p>
+        </div>
+        
+        <div class="glass-card upload-container">
+            <form action="{{ url_for('upload_handout') }}" method="POST" enctype="multipart/form-data" id="uploadForm">
+                <div class="upload-zone" id="dropZone">
+                    <i class="fas fa-cloud-upload-alt" style="font-size: 2.5rem; color: #3b82f6; margin-bottom: 1rem;"></i>
+                    <h3>Upload PDF Handouts</h3>
+                    <p class="text-muted">Drag and drop files here or click to browse</p>
+                    <input type="file" name="file" accept=".pdf" id="fileInput" style="display: none;">
+                    <button type="button" class="btn btn-primary" onclick="document.getElementById('fileInput').click()" style="margin-top: 1.5rem;">Select File</button>
+                </div>
+            </form>
+
+            <div class="table-container">
+                <h4 style="margin-bottom: 1rem; color: #1e293b;">Processed Handouts</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>File Name</th>
+                            <th>Upload Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if handouts %}
+                            {% for h in handouts %}
+                            <tr>
+                                <td><i class="fas fa-file-pdf text-danger"></i> {{ h.file_name }}</td>
+                                <td class="text-muted">{{ h.upload_date.strftime('%Y-%m-%d') }}</td>
+                                <td><span class="badge badge-success">Processed</span></td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr><td colspan="3" class="text-center text-muted" style="padding: 2rem;">No handouts uploaded yet.</td></tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Content -->
+    <div class="dashboard-side">
+        <div class="glass-card">
+            <div class="card-header-simple">
+                <span>Pending Student Queries 🚀</span>
+            </div>
+            <div class="empty-queries">
+                <p>No pending academic queries to show.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .dashboard-grid { display: grid; grid-template-columns: 1fr 340px; gap: 2.5rem; }
+    .dashboard-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; }
+    .header-actions { display: flex; align-items: center; gap: 1rem; }
+
+    .purple-alert { background: #7c3aed; color: #fff; padding: 1.25rem; border-radius: 12px; margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem; }
+    
+    .course-card { padding: 0; overflow: hidden; }
+    .course-header-banner { background: #7c3aed; padding: 1.25rem 2rem; color: #fff; }
+    .course-header-banner h3 { font-size: 1.25rem; font-weight: 700; }
+    .course-content { padding: 2rem; }
+
+    .avatar-circle-da {
+        width: 80px; height: 80px;
+        background: #3b82f6; color: #fff;
+        border-radius: 50%; display: flex;
+        align-items: center; justify-content: center;
+        font-size: 1.5rem; font-weight: 800;
+        box-shadow: 0 5px 15px rgba(59, 130, 246, 0.2);
+    }
+
+    .course-icon-row { display: flex; gap: 2.5rem; border-top: 1px solid #f1f5f9; padding-top: 1.5rem; }
+    .course-icon-item { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+    .course-icon-item img { width: 32px; height: 32px; }
+    .course-icon-item span { font-size: 0.85rem; font-weight: 700; color: #1e293b; }
+
+    .section-title-row { margin: 2rem 0 1.5rem 0; }
+    .section-title-row h2 { font-size: 1.5rem; font-weight: 800; color: #1e293b; margin-bottom: 0.5rem; }
+
+    .upload-zone { border: 2px dashed #e2e8f0; border-radius: 12px; padding: 3rem; text-align: center; margin-bottom: 2rem; transition: border-color 0.2s; }
+    .upload-zone:hover { border-color: #3b82f6; }
+
+    .card-header-simple { font-weight: 700; font-size: 1.1rem; color: #1e293b; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; }
+    .empty-queries { background: #f0f9ff; padding: 2rem; border-radius: 12px; text-align: center; color: #0369a1; font-weight: 500; }
+
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; padding: 1rem; border-bottom: 2px solid #f1f5f9; color: #1e293b; font-weight: 700; font-size: 0.9rem; }
+    td { padding: 1rem; border-bottom: 1px solid #f8fafc; font-size: 0.95rem; }
+
+    @media (max-width: 1100px) { .dashboard-grid { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const fileInput = document.getElementById('fileInput');
+    const uploadForm = document.getElementById('uploadForm');
+
+    fileInput.addEventListener('change', () => {
+        if (fileInput.files.length > 0) {
+            uploadForm.submit();
+        }
+    });
+
+    const dropZone = document.getElementById('dropZone');
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.style.borderColor = 'var(--secondary)';
+    });
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.style.borderColor = '#cbd5e1';
+    });
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        fileInput.files = e.dataTransfer.files;
+        uploadForm.submit();
+    });
+</script>
+{% endblock %}

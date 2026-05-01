@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Intelligent MDB Agent{% endblock %}</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            /* New Color Palette from Reference Images */
+            --primary-blue: #1e3a8a;
+            --primary-green: #38a169;
+            --bg-gradient: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            --card-bg: #ffffff;
+            --input-bg: #f3f4f6;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --danger: #e53e3e;
+            --success: #38a169;
+            --warning: #ed8936;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: #f1f5f9;
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        /* ── Auth Layout (Login/Register) ── */
+        .auth-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+        }
+
+        .auth-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .auth-header h1 {
+            color: var(--primary-blue);
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 2.25rem;
+            margin: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+        .auth-header p { color: var(--text-muted); font-size: 0.95rem; }
+
+        /* ── Form Components ── */
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #4b5563;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--input-bg);
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.85rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            width: 100%;
+            font-size: 1rem;
+        }
+        .btn-primary-blue { background: var(--primary-blue); color: #fff; }
+        .btn-primary-blue:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-primary-green { background: var(--primary-green); color: #fff; }
+        .btn-primary-green:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        .form-footer a { color: var(--primary-blue); font-weight: 700; text-decoration: none; }
+
+        /* ── Dashboard Top Navbar Layout ── */
+        .top-navbar {
+            background: #1e3a8a;
+            padding: 1rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .navbar-brand {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.5rem;
+            text-decoration: none;
+            color: #fff;
+        }
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .admin-badge {
+            background: #e11d48;
+            color: #fff;
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-weight: 800;
+            font-size: 0.7rem;
+            margin-left: 0.5rem;
+            letter-spacing: 0.05em;
+        }
+        .logout-pill {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            padding: 8px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            border: 1.5px solid rgba(255,255,255,0.4);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .logout-pill:hover {
+            background: rgba(255,255,255,0.15);
+            border-color: #fff;
+        }
+
+        .main-content {
+            padding: 2.5rem 3rem;
+            min-height: 100vh;
+            background-color: #f8fafc;
+        }
+        /* ── Sidebar (Legacy Restored) ── */
+        .sidebar {
+            width: 260px;
+            background: #1e293b;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: fixed;
+            left: 0; top: 0;
+            z-index: 1000;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+            padding: 2rem 1.5rem;
+        }
+        .sidebar-brand {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 2.5rem;
+            color: #fff;
+            text-decoration: none;
+        }
+        .sidebar-nav { flex: 1; }
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem 0;
+            color: #cbd5e1;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .sidebar-nav a:hover { color: #fff; }
+        .sidebar-footer { padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); }
+        .sidebar-logout { color: #facc15; font-weight: 600; text-decoration: none; font-size: 0.9rem; }
+
+        .main-wrapper {
+            margin-left: 260px;
+            padding: 2.5rem 3rem;
+            min-height: 100vh;
+            background-color: #f8fafc;
+        }
+
+        /* ── Glass Card Base (Shared) ── */
+        .glass-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 2rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .glass-card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+
+        .dashboard-header h1 {
+            color: var(--primary-blue);
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+        .section-desc { color: var(--text-muted); font-size: 1rem; margin-bottom: 2rem; }
+
+        @media (max-width: 900px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); }
+            .main-wrapper { margin-left: 0; padding: 1.5rem; }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    {% block body %}
+    {% if session.user_id %}
+        {% if session.role == 'admin' %}
+            <!-- Admin Top Navbar -->
+            <nav class="top-navbar">
+                <a href="{{ url_for('admin_dashboard') }}" class="navbar-brand">MDB Agent System</a>
+                <div class="navbar-user">
+                    <span>{{ session.name }} <span class="admin-badge">ADMIN</span></span>
+                    <form action="{{ url_for('logout') }}" method="post" style="display:inline">
+                        <button type="submit" class="logout-pill">Logout</button>
+                    </form>
+                </div>
+            </nav>
+        {% else %}
+            <!-- Student/Instructor Sidebar -->
+            <aside class="sidebar">
+                <a href="{{ url_for('student_dashboard') if session.role == 'student' else url_for('instructor_dashboard') }}" class="sidebar-brand">MDB Agent</a>
+                <div class="sidebar-nav">
+                    <a href="{{ url_for('student_dashboard') if session.role == 'student' else url_for('instructor_dashboard') }}"><i class="fas fa-home"></i> Home</a>
+                    {% if session.role == 'student' %}
+                    <a href="{{ url_for('student_dashboard') }}#faq-section"><i class="fas fa-circle-question"></i> FAQs</a>
+                    {% endif %}
+                </div>
+                <div class="sidebar-footer">
+                    <form action="{{ url_for('logout') }}" method="post">
+                        <button type="submit" class="sidebar-logout" style="background:none; border:none; cursor:pointer; padding:0;">
+                            Logout ({{ session.name|lower }})
+                        </button>
+                    </form>
+                </div>
+            </aside>
+        {% endif %}
+    {% endif %}
+
+    <div class="{% if session.user_id and session.role != 'admin' %}main-wrapper{% else %}main-content{% endif %}">
+        <!-- System Flash Messages -->
+        <div class="flash-container" style="max-width: 1100px; margin: 0 auto; padding: 1rem;">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}" style="padding: 1rem; border-radius: 8px; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem; 
+                            {% if category == 'success' %} background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; 
+                            {% elif category == 'danger' %} background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; 
+                            {% else %} background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; {% endif %}">
+                            <i class="fas {% if category == 'success' %}fa-check-circle{% elif category == 'danger' %}fa-times-circle{% else %}fa-info-circle{% endif %}"></i>
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        {% block content %}{% endblock %}
+    </div>
+    {% endblock %}
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
+
+   
+
