@@ -190,7 +190,7 @@
         }
         /* ── Sidebar (Legacy Restored) ── */
         .sidebar {
-            width: 260px;
+            width: 200px;
             background: #1e293b;
             color: #fff;
             display: flex;
@@ -200,13 +200,19 @@
             left: 0; top: 0;
             z-index: 1000;
             box-shadow: 4px 0 20px rgba(0,0,0,0.1);
-            padding: 2rem 1.5rem;
+            padding: 1.75rem 1rem;
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .sidebar::-webkit-scrollbar {
+            display: none;
         }
         .sidebar-brand {
             font-family: 'Outfit', sans-serif;
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             font-weight: 800;
-            margin-bottom: 2.5rem;
+            margin-bottom: 2rem;
             color: #fff;
             text-decoration: none;
         }
@@ -226,7 +232,7 @@
         .sidebar-logout { color: #facc15; font-weight: 600; text-decoration: none; font-size: 0.9rem; }
 
         .main-wrapper {
-            margin-left: 260px;
+            margin-left: 200px;
             padding: 2.5rem 3rem;
             min-height: 100vh;
             background-color: #f8fafc;
