@@ -2,7 +2,7 @@ import os
 import hashlib
 from datetime import datetime
 from functools import wraps
-from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, send_file
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
 
@@ -231,7 +231,8 @@ def dashboard():
 @login_required
 @role_required('student')
 def student_dashboard():
-    return render_template('student_dashboard.html')
+    handouts = Handout.query.order_by(Handout.upload_date.desc()).all()
+    return render_template('student_dashboard.html', handouts=handouts)
 
 @app.route('/instructor/dashboard')
 @login_required
@@ -384,6 +385,22 @@ def upload_handout():
         
     flash('Allowed file types: PDF only.', 'danger')
     return redirect(url_for('instructor_dashboard') if session.get('role') == 'instructor' else url_for('student_dashboard'))
+
+@app.route('/handouts/<int:handout_id>/download')
+@login_required
+@role_required('student')
+def download_handout(handout_id):
+    handout = Handout.query.get_or_404(handout_id)
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], handout.file_name)
+    if not os.path.isfile(filepath):
+        flash('This handout file is no longer available on the server.', 'danger')
+        return redirect(url_for('student_dashboard'))
+    return send_file(
+        filepath,
+        as_attachment=True,
+        download_name=handout.file_name,
+        mimetype='application/pdf',
+    )
 
 @app.route('/analyze_query', methods=['POST'])
 @login_required

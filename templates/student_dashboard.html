@@ -45,6 +45,35 @@
             </div>
         </div>
 
+        <!-- Course handouts (download) -->
+        <div class="glass-card handouts-card" id="handouts-section">
+            <div class="card-header blue-glow">
+                <i class="fas fa-file-pdf"></i>
+                <span>Course handouts</span>
+            </div>
+            <div class="card-body handouts-card-body">
+                {% if handouts %}
+                <div class="handouts-list-scroll">
+                    <ul class="handouts-list">
+                        {% for h in handouts %}
+                        <li class="handouts-list-item">
+                            <div class="handouts-list-meta">
+                                <span class="handouts-filename" title="{{ h.file_name }}">{{ h.file_name }}</span>
+                                <span class="handouts-date">{{ h.upload_date.strftime('%b %d, %Y') if h.upload_date else '' }}</span>
+                            </div>
+                            <a href="{{ url_for('download_handout', handout_id=h.id) }}" class="btn-download">
+                                <i class="fas fa-download"></i> Download
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% else %}
+                <p class="handouts-empty">No PDF handouts have been uploaded yet. Check back after your instructor adds materials.</p>
+                {% endif %}
+            </div>
+        </div>
+
         <!-- AI Query Card -->
         <div class="glass-card query-card">
             <div class="card-header blue-glow">
@@ -203,6 +232,68 @@
         color: #64748b;
         font-size: 0.92rem;
         line-height: 1.55;
+    }
+
+    .handouts-card-body { padding-top: 0.25rem; }
+    .handouts-list-scroll {
+        max-height: min(320px, 50vh);
+        overflow-y: auto;
+        overflow-x: hidden;
+        margin-top: 0.15rem;
+        padding-right: 0.35rem;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-gutter: stable;
+    }
+    .handouts-list { list-style: none; margin: 0; padding: 0; }
+    .handouts-list-item {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 1rem 1.25rem;
+        padding: 0.85rem 0;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    .handouts-list-item:last-child { border-bottom: none; padding-bottom: 0.25rem; }
+    .handouts-list-meta {
+        min-width: 0;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+        padding-right: 0.5rem;
+    }
+    .handouts-filename { font-weight: 700; color: #1e293b; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .handouts-date { font-size: 0.8rem; color: #64748b; font-weight: 500; }
+    .btn-download {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        flex: 0 0 auto;
+        width: auto;
+        max-width: 100%;
+        padding: 0.55rem 1rem;
+        background: #1e3a8a;
+        color: #fff !important;
+        text-decoration: none;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        white-space: nowrap;
+        transition: opacity 0.2s;
+        border: none;
+        cursor: pointer;
+        box-sizing: border-box;
+    }
+    .btn-download:hover { opacity: 0.9; }
+    .handouts-empty { margin: 0; color: #64748b; font-size: 0.95rem; line-height: 1.55; }
+    @media (max-width: 740px) {
+        .handouts-list-item {
+            grid-template-columns: 1fr;
+            justify-items: stretch;
+        }
+        .handouts-list-meta { padding-right: 0; }
+        .btn-download { width: 100%; justify-self: stretch; }
     }
 
     .query-card textarea {
