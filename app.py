@@ -20,7 +20,8 @@ db_path = os.path.join(os.path.dirname(__file__), 'mdb.db')
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(__file__), 'uploads')
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # 100MB max upload
 
 ALLOWED_EXTENSIONS = {'pdf'}
 
@@ -363,6 +364,7 @@ def upload_handout():
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
         file.save(filepath)
         
         # Extract text using NLP utility
@@ -401,6 +403,24 @@ def download_handout(handout_id):
         download_name=handout.file_name,
         mimetype='application/pdf',
     )
+
+@app.route('/handouts/<int:handout_id>/delete', methods=['POST'])
+@login_required
+@role_required('instructor')
+def delete_handout(handout_id):
+    handout = Handout.query.get_or_404(handout_id)
+    upload_root = os.path.realpath(app.config['UPLOAD_FOLDER'])
+    filepath = os.path.realpath(os.path.join(upload_root, handout.file_name))
+    if filepath.startswith(upload_root + os.sep):
+        if os.path.isfile(filepath):
+            try:
+                os.remove(filepath)
+            except OSError:
+                flash(f'Could not remove file "{handout.file_name}" from disk.', 'warning')
+    db.session.delete(handout)
+    db.session.commit()
+    flash(f'Handout "{handout.file_name}" removed.', 'success')
+    return redirect(url_for('instructor_dashboard'))
 
 @app.route('/analyze_query', methods=['POST'])
 @login_required
