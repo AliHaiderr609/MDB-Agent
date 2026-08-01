@@ -71,6 +71,7 @@ The app seeds a default admin user on first database init (see `init_db()` in `a
 
 Full behavior and data model are described in `MDB-Agent/document/goal.md`.
 
+
 ## License
 
 No license file is included in this repository; add one if you plan to distribute the project.
